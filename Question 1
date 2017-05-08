@@ -1,0 +1,92 @@
+Question 1
+
+########### IpValidationTest.java ###########
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class IpValidationTest {
+
+	    private Pattern pattern;
+	    private Matcher matcher;
+
+	    private static final String IPADDRESS_PATTERN =
+			"^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+			"([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+			"([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+			"([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
+
+	    public IpValidationTest(){
+		  pattern = Pattern.compile(IPADDRESS_PATTERN);
+	    }
+	    public boolean validate(final String ip){
+		  matcher = pattern.matcher(ip);
+		  return matcher.matches();
+	    }
+
+}
+
+
+
+
+############# IpValidationRegexTest.java #################
+
+import static org.junit.Assert.*;
+
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import com.tngtech.java.junit.dataprovider.DataProvider;
+import com.tngtech.java.junit.dataprovider.UseDataProvider;
+
+public class IpValidationRegexTest {
+
+	private IpValidationTest ipValidator;
+	private DataProvider dataProvider;
+
+	@BeforeClass
+        public void initData(){
+		ipValidator = new IpValidationTest();
+        }
+
+	@DataProvider
+	public Object[][] validIPProvider() {
+		return new Object[][]{
+		   new Object[] {"1.1.1.1"},new Object[] {"255.255.255.255"},
+                   new Object[] {"192.168.1.1"},new Object[] {"10.10.1.1"},
+                   new Object[] {"132.254.111.10"},new Object[] {"26.10.2.10"},
+		   new Object[] {"127.0.0.1"}
+		};
+	}
+
+	@DataProvider
+	public Object[][] invalidIPProvider() {
+		return new Object[][]{
+		   new Object[] {"10.10.10"},new Object[] {"10.10"},
+                   new Object[] {"10"},new Object[] {"a.a.a.a"},
+                   new Object[] {"10.0.0.a"},new Object[] {"10.10.10.256"},
+		   new Object[] {"222.222.2.999"},new Object[] {"999.10.10.20"},
+                   new Object[] {"2222.22.22.22"},new Object[] {"22.2222.22.2"},
+                   new Object[] {"10.10.10"},new Object[] {"10.10.10"},
+		};
+	}
+
+	@Test
+	@UseDataProvider("validIPProvider")
+	public void ValidIPAddressTest(String ip) {
+		   boolean valid = ipValidator.validate(ip);
+		   System.out.println("IPAddress is valid : " + ip + " , " + valid);
+		   Assert.assertEquals(true, valid);
+	}
+
+	@Test
+	@UseDataProvider("invalidIPProvider")
+	public void InValidIPAddressTest(String ip) {
+		   boolean valid = ipValidator.validate(ip);
+		   System.out.println("IPAddress is valid : " + ip + " , " + valid);
+		   Assert.assertEquals(false, valid);
+}
+
+
+}
